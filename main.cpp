@@ -76,6 +76,8 @@ int main(int argc, char** argv)
         return 1;
     }
 
+    int exitResult = 0;
+
     try
     {
         Configuration cfg;
@@ -252,8 +254,9 @@ int main(int argc, char** argv)
     catch (const std::exception& ex)
     {
         std::cerr << "Exception: " << ex.what() << std::endl;
+        exitResult = 1;
     }
 
     curl_global_cleanup();
-    return 0;
+    return exitResult;
 }
