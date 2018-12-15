@@ -1,0 +1,30 @@
+cmake_minimum_required(VERSION 3.1)
+project(camera_streamer)
+
+set(CMAKE_CXX_STANDARD 14)
+set(TARGET camera_streamer)
+
+find_package(CURL REQUIRED)
+find_package(Boost 1.60.0 COMPONENTS system filesystem program_options REQUIRED)
+
+add_executable(${TARGET}
+    main.cpp
+    Configuration.cpp
+    Configuration.h
+    CURLSession.cpp
+    CURLSession.h
+)
+
+target_include_directories(${TARGET}
+    PRIVATE
+    ${CURL_INCLUDE_DIRS}
+    ${Boost_INCLUDE_DIRS}
+)
+
+target_link_libraries(${TARGET}
+    PRIVATE
+    ${CURL_LIBRARIES}
+    ${Boost_SYSTEM_LIBRARY}
+    ${Boost_FILESYSTEM_LIBRARY}
+    ${Boost_PROGRAM_OPTIONS_LIBRARY}
+)
