@@ -30,3 +30,17 @@ target_link_libraries(${TARGET}
     ${Boost_FILESYSTEM_LIBRARY}
     ${Boost_PROGRAM_OPTIONS_LIBRARY}
 )
+
+install(TARGETS ${TARGET}
+    RUNTIME DESTINATION bin
+)
+
+install(FILES assets/camera.config.env
+    DESTINATION etc/default
+    RENAME camera
+)
+
+install(PROGRAMS assets/camera_capturer.sh
+    DESTINATION bin
+    RENAME camera_capturer
+)
