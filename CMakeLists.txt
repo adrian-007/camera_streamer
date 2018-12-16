@@ -1,4 +1,6 @@
 cmake_minimum_required(VERSION 3.1)
+include(GNUInstallDirs)
+
 project(camera_streamer)
 
 set(CMAKE_CXX_STANDARD 14)
@@ -32,15 +34,15 @@ target_link_libraries(${TARGET}
 )
 
 install(TARGETS ${TARGET}
-    RUNTIME DESTINATION bin
+    RUNTIME DESTINATION ${CMAKE_INSTALL_FULL_BINDIR}
 )
 
 install(FILES assets/camera.config.env
-    DESTINATION etc/default
+    DESTINATION ${CMAKE_INSTALL_FULL_SYSCONFDIR}/default
     RENAME camera
 )
 
 install(PROGRAMS assets/camera_capturer.sh
-    DESTINATION bin
+    DESTINATION ${CMAKE_INSTALL_FULL_BINDIR}
     RENAME camera_capturer
 )
