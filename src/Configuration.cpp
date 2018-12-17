@@ -1,6 +1,9 @@
 #include <cstdlib>
 #include <cstring>
 
+//#include <boost/algorithm/string/split.hpp>
+#include <boost/algorithm/string.hpp>
+
 #include "Configuration.h"
 
 Configuration::Configuration()
@@ -46,5 +49,10 @@ Configuration::Configuration()
     if (m_max_backlog_total_segment_duration > 0 && m_max_backlog_total_segment_duration < m_segment_duration)
     {
         m_max_backlog_total_segment_duration = m_segment_duration;
+    }
+
+    if ((pValue = getenv("CAMERA_SEGMENT_EXTENSIONS")) != nullptr)
+    {
+        boost::algorithm::split(m_extensions, pValue, boost::algorithm::is_any_of(" \t"), boost::algorithm::token_compress_on);
     }
 }

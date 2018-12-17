@@ -19,10 +19,10 @@ namespace po = boost::program_options;
  * Search for files to upload.
  *
  * @param root path that will be searched for subdirectories matching a date format, containing target files
- * @param extension of searched files
+ * @param extensions of searched files
  * @return list of found files matching a location and extension patterns, ordered from newest to oldest
  */
-std::deque<fs::path> find_upload_files(const fs::path& root, const std::string& extension)
+std::deque<fs::path> find_upload_files(const fs::path& root, const std::vector<std::string>& extensions)
 {
     const std::regex rx("[0-9]{4}-[0-9]{2}-[0-9]{2}");
     std::deque<fs::path> results;
@@ -33,9 +33,10 @@ std::deque<fs::path> find_upload_files(const fs::path& root, const std::string& 
 
         if (std::regex_match(p.filename().string(), rx))
         {
-            std::copy_if(fs::directory_iterator(p), fs::directory_iterator(), std::back_inserter(results), [extension](const fs::path& p)
+            std::copy_if(fs::directory_iterator(p), fs::directory_iterator(), std::back_inserter(results), [&extensions](const fs::path& p)
             {
-                return p.has_extension() && strcasecmp(p.extension().c_str(), extension.c_str()) == 0;
+                auto ext = p.extension();
+                return !ext.empty() && std::find(extensions.begin(), extensions.end(), ext.string()) != extensions.end();
             });
         }
     }
@@ -107,6 +108,11 @@ int main(int argc, char** argv)
             throw std::runtime_error("Segment duration not specified");
         }
 
+        if (cfg.extensions().empty())
+        {
+            throw std::runtime_error("Extensions list cannot be empty");
+        }
+
         if (!fs::exists(cfg.base_dir()) || !fs::is_directory(cfg.base_dir()))
         {
             throw std::runtime_error("Base directory doesn't exist or is not a directory");
@@ -137,7 +143,7 @@ int main(int argc, char** argv)
         while (true)
         {
             // First, look for files to upload
-            auto paths = find_upload_files(cfg.base_dir(), ".ts");
+            auto paths = find_upload_files(cfg.base_dir(), cfg.extensions());
 
             if (paths.empty())
             {
