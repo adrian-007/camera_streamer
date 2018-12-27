@@ -5,8 +5,6 @@
 # will segment files in HLS-compatible way. Produced segment files are ready for uploading to
 # remote server where they can be stored or feed live to clients.
 
-# export $(grep -v '^#' /etc/default/camera | xargs)
-
 [ "$CAMERA_BASE_URL" != "" ] || exit 1
 [ "$CAMERA_BASE_DIR" != "" ] || exit 1
 
@@ -22,11 +20,10 @@ raspivid \
     -fps $CAMERA_FPS -w $CAMERA_WIDTH -h $CAMERA_HEIGHT -n -t 0 -pf baseline -lev 4 \
     -qp 20 -b 0 -g $(($CAMERA_FPS*$CAMERA_SEGMENT_DURATION)) -cfx 128:128 -a 1032 -a "%Y-%m-%d %X" -o - | \
     ffmpeg -loglevel fatal \
-        -r $CAMERA_FPS -f h264 -probesize 32 -analyzeduration 1 -i - -codec:v copy -f hls \
+        -r $CAMERA_FPS -f h264 -probesize 8096 -analyzeduration 100000 -fflags +genpts -i - -codec:v copy -f hls \
         -hls_list_size 0 -hls_time $(($CAMERA_SEGMENT_DURATION-1)) -use_localtime 1 -use_localtime_mkdir 1 \
-        -hls_flags second_level_segment_index+temp_file+independent_segments \
-        -hls_segment_filename "$CAMERA_BASE_DIR/%Y-%m-%d/video-%H:%M:%S-%%04d.ts" \
-        /dev/null
+        -hls_flags temp_file+independent_segments -hls_segment_filename "$CAMERA_BASE_DIR/%Y-%m-%d/video_%H%M%S.ts" \
+        /dev/null &
 
 # This trickery is needed for properly killing child processes (ffmpeg & raspivid) so that they
 # can be restarted quickly. In this instance, we'll kill ffmpeg process, which will trigger end
