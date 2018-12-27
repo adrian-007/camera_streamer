@@ -46,3 +46,7 @@ install(PROGRAMS assets/camera_capturer.sh
     DESTINATION ${CMAKE_INSTALL_FULL_BINDIR}
     RENAME camera_capturer
 )
+
+install(DIRECTORY
+     DESTINATION ${CMAKE_INSTALL_FULL_LOCALSTATEDIR}/lib/camera
+)
