@@ -18,7 +18,7 @@ trap 'kill -TERM $PID' INT TERM
 
 raspivid \
     -fps $CAMERA_FPS -w $CAMERA_WIDTH -h $CAMERA_HEIGHT -n -t 0 -pf baseline -lev 4 \
-    -qp 20 -b 0 -g $(($CAMERA_FPS*$CAMERA_SEGMENT_DURATION)) -cfx 128:128 -a 1032 -a "%Y-%m-%d %X" -o - | \
+    -qp 20 -b 0 -g $(($CAMERA_FPS*$CAMERA_SEGMENT_DURATION)) -cfx 128:128 -a 1032 -a "%Y-%m-%d %X" -ae 16,0xff,0x808033,2,20,0 -o - | \
     ffmpeg -loglevel fatal \
         -r $CAMERA_FPS -f h264 -probesize 8096 -analyzeduration 100000 -fflags +genpts -i - -codec:v copy -f hls \
         -hls_list_size 0 -hls_time $(($CAMERA_SEGMENT_DURATION-1)) -use_localtime 1 -use_localtime_mkdir 1 \
